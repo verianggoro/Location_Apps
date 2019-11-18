@@ -98,10 +98,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+
+    //Todo fungsi untuk absen masuk
     private void inAbsen(){
         String checkIn = "08:00:00";
-        final double latitudeRefrence = -6.230390;      //todo latitude & longitude tlt
-        final double longitudeRefrence = 106.817949;
+        String checkLimit = "03:00:00";
+        final double latitudeRefrence = -6.230390;       //todo ketrangan latitude & longitude telkomsel smart office
+        final double longitudeRefrence = 106.817949;     //todo tambahkan latitude & longitude tempat kerja anda, dapat di copas dr maps
         final float[] distance = new float[1];
         final float[] mainRadius = {0, 50};
 
@@ -110,6 +113,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             final Calendar calendarCheckIn = Calendar.getInstance();
             calendarCheckIn.setTime(mainTime);
             calendarCheckIn.add(Calendar.DATE, 1);
+
+            Date limitTime = new SimpleDateFormat("HH:mm:ss").parse(checkLimit);
+            final Calendar limitCalender = Calendar.getInstance();
+            limitCalender.setTime(limitTime);
+            limitCalender.add(Calendar.DATE, 1);
 
             Calendar currentCalendar = Calendar.getInstance();
             final Date x = currentCalendar.getTime();
@@ -121,10 +129,56 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Location.distanceBetween(latitudeRefrence, longitudeRefrence,
                                 location.getLatitude(), location.getLongitude(), distance);
 
-                        if (distance[0] <= mainRadius[1] && x.before(calendarCheckIn.getTime())){
+                        if (distance[0] <= mainRadius[1] && (x.before(calendarCheckIn.getTime()) && x.after(limitCalender.getTime()))){
                             binding.tvLonglatide.setVisibility(View.VISIBLE);
                             binding.tvLocation.setText("Anda Masuk");
                             System.out.println("Anda Masukk");
+                        }else{
+                            Toast.makeText(getApplicationContext(), "Maaf Anda Tidak Dapat Absen, Karena Anda Telat", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            });
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //Todo fungsi untuk absen keluar
+    private void outAbsen(){
+        String checkout = "17:00:00";
+        String checkLimit = "1:00:00";
+        final double latitudeRefrence = -6.230390;      //todo ketrangan latitude & longitude telkomsel smart office
+        final double longitudeRefrence = 106.817949;       //todo tambahkan latitude & longitude tempat kerja anda, dapat di copas dr maps
+        final float[] distance = new float[1];
+        final float[] mainRadius = {0, 50};
+
+        try {
+            Date mainTime = new SimpleDateFormat("HH:mm:ss").parse(checkout);
+            final Calendar calendarCheckOut = Calendar.getInstance();
+            calendarCheckOut.setTime(mainTime);
+            calendarCheckOut.add(Calendar.DATE, 1);
+
+            Date limitTime = new SimpleDateFormat("HH:mm:ss").parse(checkLimit);
+            final Calendar limitCalender = Calendar.getInstance();
+            limitCalender.setTime(limitTime);
+            limitCalender.add(Calendar.DATE, 1);
+
+            Calendar currentCalendar = Calendar.getInstance();
+            final Date x = currentCalendar.getTime();
+
+            fusedClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null){
+                        Location.distanceBetween(latitudeRefrence, longitudeRefrence,
+                                location.getLatitude(), location.getLongitude(), distance);
+
+                        if (distance[0] <= mainRadius[1] && x.after(calendarCheckOut.getTime())){
+                            binding.tvLonglatide.setVisibility(View.VISIBLE);
+                            binding.tvLocation.setText("Anda Keluar");
+                        }else{
+                            Toast.makeText(getApplicationContext(), "Maaf Anda Tidak Dapat Keluar", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
