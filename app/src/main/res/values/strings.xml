@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Location Apps</string>
+    <string name="txt_btn_get_cur_loc">Get Current Location</string>
+    <string name="txt_get_radius">Get Radius</string>
+    <string name="txt_permission_required">Permission Required</string>
+    <string name="txt_rational_msg">You Need Allow All Permission TO Using This App</string>
+    <string name="txt_permission_denied">Permission Denied</string>
+    <string name="txt_denied_msg">If You Reject Permission, You Can Not Use This Services</string>
+</resources>
